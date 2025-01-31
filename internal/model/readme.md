@@ -1,4 +1,5 @@
-this folder will contain execution call to external dependencies.
+this package contains reusable objects
+only contains structs with no methods
 
-the code in this folder is expected to be hard (unable) to test.
-because of that, you need to minimize code logic in this folder.
+if method is necessary, only getter and setter which should only consist one line of code
+other than that, it has to be put in logic folder
