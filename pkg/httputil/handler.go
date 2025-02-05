@@ -1,3 +1,6 @@
 package httputil
 
-type HttpHandler func(input interface{}) (output interface{}, err error)
+type GenericHandler interface {
+	HandlerFunc(input interface{}) (output interface{}, err error)
+	ObjectAddress() interface{}
+}

@@ -1,5 +1,8 @@
 package model
 
+type CheckoutPageRequest struct {
+	UserID int64
+}
 type CheckoutPageResponse struct {
 	Items []CheckoutItem
 

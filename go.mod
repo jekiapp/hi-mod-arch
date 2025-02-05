@@ -1,1 +1,1 @@
-module hi-mod
+module github.com/jekiapp/hi-mod
