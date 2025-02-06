@@ -2,11 +2,11 @@ package logic
 
 import "github.com/jekiapp/hi-mod/internal/model"
 
-type GetCartDataItf interface {
+type IGetCartData interface {
 	GetCartFromDB(userID int64) (model.CartData, error)
 }
 
-func GetCartData(userID int64, itf GetCartDataItf) (model.CartData, error) {
+func GetCartData(userID int64, itf IGetCartData) (model.CartData, error) {
 	// validate user id
 	cartData, err := itf.GetCartFromDB(userID)
 	//validate cart
@@ -16,11 +16,11 @@ func GetCartData(userID int64, itf GetCartDataItf) (model.CartData, error) {
 	return cartData, nil
 }
 
-type ConvertCartItemToCheckoutItemItf interface {
+type IConvertCartItemToCheckoutItem interface {
 	GetProductData(productID int64) (model.ProductData, error)
 }
 
-func ConvertCartItemToCheckoutItem(cartItems []model.CartItem, itf ConvertCartItemToCheckoutItemItf) ([]model.CheckoutItem, error) {
+func ConvertCartItemToCheckoutItem(cartItems []model.CartItem, itf IConvertCartItemToCheckoutItem) ([]model.CheckoutItem, error) {
 	checkoutItems := make([]model.CheckoutItem, 0)
 	for _, item := range cartItems {
 		product, err := itf.GetProductData(item.ProductID)
