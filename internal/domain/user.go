@@ -2,9 +2,10 @@ package domain
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/jekiapp/hi-mod/internal/config"
 	"github.com/jekiapp/hi-mod/internal/model"
-	"net/http"
 )
 
 func GetUserInfo(cfg *config.Config, cli *http.Client, userID int64) (model.UserData, error) {

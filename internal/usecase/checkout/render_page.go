@@ -2,10 +2,10 @@ package checkout
 
 import (
 	"database/sql"
-	"github.com/jekiapp/hi-mod/internal/config"
-	"github.com/jekiapp/hi-mod/internal/domain"
 	"net/http"
 
+	"github.com/jekiapp/hi-mod/internal/config"
+	"github.com/jekiapp/hi-mod/internal/domain"
 	"github.com/jekiapp/hi-mod/internal/logic"
 	"github.com/jekiapp/hi-mod/internal/model"
 	"github.com/jekiapp/hi-mod/pkg/handler"

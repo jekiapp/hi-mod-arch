@@ -2,6 +2,7 @@ package domain
 
 import (
 	"database/sql"
+
 	"github.com/jekiapp/hi-mod/internal/model"
 )
 
