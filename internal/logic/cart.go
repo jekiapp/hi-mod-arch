@@ -15,3 +15,27 @@ func GetCartData(userID int64, itf GetCartDataItf) (model.CartData, error) {
 	}
 	return cartData, nil
 }
+
+type ConvertCartItemToCheckoutItemItf interface {
+	GetProductData(productID int64) (model.ProductData, error)
+}
+
+func ConvertCartItemToCheckoutItem(cartItems []model.CartItem, itf ConvertCartItemToCheckoutItemItf) ([]model.CheckoutItem, error) {
+	checkoutItems := make([]model.CheckoutItem, 0)
+	for _, item := range cartItems {
+		product, err := itf.GetProductData(item.ProductID)
+		if err != nil {
+			return nil, err
+		}
+
+		subtotal := product.ProductPrice * float64(item.Quantity)
+
+		checkItem := model.CheckoutItem{
+			Quantity: item.Quantity,
+			Subtotal: subtotal,
+		}
+		checkoutItems = append(checkoutItems, checkItem)
+	}
+
+	return checkoutItems, nil
+}

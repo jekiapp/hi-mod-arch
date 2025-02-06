@@ -2,30 +2,30 @@ package logic
 
 import "github.com/jekiapp/hi-mod/internal/model"
 
-type CalculatePriceItf interface {
-	GetProductPrice(productID int64) (float64, error)
-	GetPromotion(userID, productID int64) (model.PromotionData, error)
+type ICalculateTotalPrice interface {
+	GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error)
 }
 
-func CalculatePrice(cart *model.CartData, itf CalculatePriceItf) error {
-	items := cart.Items
+func CalculateTotalPrice(coupon string, items []model.CheckoutItem, itf ICalculateTotalPrice) (float64, error) {
 	totalPrice := float64(0)
 	for _, item := range items {
-
-		currentPrice, err := itf.GetProductPrice(item.ProductID)
-		if err != nil {
-			return err
-		}
-
-		promo, err := itf.GetPromotion(cart.UserID, item.ProductID)
-		if err != nil {
-			return err
-		}
-		currentPrice -= promo.Discount
-		subtotal := currentPrice * float64(item.Quantity)
-		totalPrice += subtotal
+		totalPrice += item.Subtotal
 	}
 
-	cart.TotalPrice = totalPrice
-	return nil
+	promo, err := itf.GetPromotion(coupon, totalPrice)
+	if err != nil {
+		return 0, err
+	}
+
+	// ...
+	// various validation
+	// eligibility logic etc.
+	// ...
+	if !promo.IsValid {
+		return totalPrice, nil
+	}
+
+	totalPrice -= promo.Discount
+
+	return totalPrice, nil
 }
