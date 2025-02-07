@@ -4,11 +4,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jekiapp/hi-mod/internal/config"
-	"github.com/jekiapp/hi-mod/internal/domain"
-	"github.com/jekiapp/hi-mod/internal/logic"
-	"github.com/jekiapp/hi-mod/internal/usecase/checkout"
-	"github.com/jekiapp/hi-mod/pkg/db"
+	"github.com/jekiapp/hi-mod-arch/internal/config"
+	"github.com/jekiapp/hi-mod-arch/internal/domain"
+	"github.com/jekiapp/hi-mod-arch/internal/logic"
+	"github.com/jekiapp/hi-mod-arch/internal/usecase/checkout"
+	"github.com/jekiapp/hi-mod-arch/pkg/db"
 )
 
 func InitApplication() Handler {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	handlerPkg "github.com/jekiapp/hi-mod/pkg/handler"
+	handlerPkg "github.com/jekiapp/hi-mod-arch/pkg/handler"
 	"net/http"
 )
 

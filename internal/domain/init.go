@@ -1,10 +1,10 @@
 package domain
 
 import (
-	"github.com/jekiapp/hi-mod/internal/config"
-	"github.com/jekiapp/hi-mod/internal/domain/product"
-	"github.com/jekiapp/hi-mod/internal/domain/promo"
-	"github.com/jekiapp/hi-mod/internal/domain/user"
+	"github.com/jekiapp/hi-mod-arch/internal/config"
+	"github.com/jekiapp/hi-mod-arch/internal/domain/product"
+	"github.com/jekiapp/hi-mod-arch/internal/domain/promo"
+	"github.com/jekiapp/hi-mod-arch/internal/domain/user"
 )
 
 func Init(cfg *config.Config) error {

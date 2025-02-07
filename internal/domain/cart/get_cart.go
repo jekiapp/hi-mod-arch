@@ -3,7 +3,7 @@ package cart
 import (
 	"database/sql"
 
-	"github.com/jekiapp/hi-mod/internal/model"
+	"github.com/jekiapp/hi-mod-arch/internal/model"
 )
 
 func SelectCartByUserID(db *sql.DB, userID int64) (model.CartData, error) {

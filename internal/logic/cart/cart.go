@@ -1,6 +1,6 @@
 package cart
 
-import "github.com/jekiapp/hi-mod/internal/model"
+import "github.com/jekiapp/hi-mod-arch/internal/model"
 
 type IGetCartData interface {
 	GetCartFromDB(userID int64) (model.CartData, error)

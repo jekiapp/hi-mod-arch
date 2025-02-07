@@ -1,6 +1,6 @@
 package checkout
 
-import "github.com/jekiapp/hi-mod/internal/model"
+import "github.com/jekiapp/hi-mod-arch/internal/model"
 
 type renderPageInterface interface {
 	GetUserInfo(userID int64) (model.UserData, error)

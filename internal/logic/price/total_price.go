@@ -1,10 +1,15 @@
 package price
 
-import "github.com/jekiapp/hi-mod/internal/model"
+import (
+	"fmt"
+	"github.com/jekiapp/hi-mod-arch/internal/model"
+)
 
 type ICalculateTotalPrice interface {
 	GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error)
 }
+
+var INVALID_COUPON = fmt.Errorf("invalid coupon")
 
 func CalculateTotalPrice(coupon string, items []model.CheckoutItem, itf ICalculateTotalPrice) (float64, error) {
 	totalPrice := float64(0)
@@ -22,7 +27,7 @@ func CalculateTotalPrice(coupon string, items []model.CheckoutItem, itf ICalcula
 	// eligibility logic etc.
 	// ...
 	if !promo.IsValid {
-		return totalPrice, nil
+		return totalPrice, INVALID_COUPON
 	}
 
 	totalPrice -= promo.Discount

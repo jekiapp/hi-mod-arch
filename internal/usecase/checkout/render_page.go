@@ -4,15 +4,15 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/jekiapp/hi-mod/internal/config"
-	cart_domain "github.com/jekiapp/hi-mod/internal/domain/cart"
-	product_domain "github.com/jekiapp/hi-mod/internal/domain/product"
-	promo_domain "github.com/jekiapp/hi-mod/internal/domain/promo"
-	user_domain "github.com/jekiapp/hi-mod/internal/domain/user"
-	cart_logic "github.com/jekiapp/hi-mod/internal/logic/cart"
-	price_logic "github.com/jekiapp/hi-mod/internal/logic/price"
-	"github.com/jekiapp/hi-mod/internal/model"
-	"github.com/jekiapp/hi-mod/pkg/handler"
+	"github.com/jekiapp/hi-mod-arch/internal/config"
+	cart_domain "github.com/jekiapp/hi-mod-arch/internal/domain/cart"
+	product_domain "github.com/jekiapp/hi-mod-arch/internal/domain/product"
+	promo_domain "github.com/jekiapp/hi-mod-arch/internal/domain/promo"
+	user_domain "github.com/jekiapp/hi-mod-arch/internal/domain/user"
+	cart_logic "github.com/jekiapp/hi-mod-arch/internal/logic/cart"
+	price_logic "github.com/jekiapp/hi-mod-arch/internal/logic/price"
+	"github.com/jekiapp/hi-mod-arch/internal/model"
+	"github.com/jekiapp/hi-mod-arch/pkg/handler"
 )
 
 type renderPageUsecase struct {
