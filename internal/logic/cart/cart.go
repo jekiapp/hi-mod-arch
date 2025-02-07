@@ -1,4 +1,4 @@
-package logic
+package cart
 
 import "github.com/jekiapp/hi-mod/internal/model"
 

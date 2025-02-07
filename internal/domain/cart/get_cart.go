@@ -1,4 +1,4 @@
-package domain
+package cart
 
 import (
 	"database/sql"

@@ -5,8 +5,12 @@ import (
 	"net/http"
 
 	"github.com/jekiapp/hi-mod/internal/config"
-	"github.com/jekiapp/hi-mod/internal/domain"
-	"github.com/jekiapp/hi-mod/internal/logic"
+	cart_domain "github.com/jekiapp/hi-mod/internal/domain/cart"
+	product_domain "github.com/jekiapp/hi-mod/internal/domain/product"
+	promo_domain "github.com/jekiapp/hi-mod/internal/domain/promo"
+	user_domain "github.com/jekiapp/hi-mod/internal/domain/user"
+	cart_logic "github.com/jekiapp/hi-mod/internal/logic/cart"
+	price_logic "github.com/jekiapp/hi-mod/internal/logic/price"
 	"github.com/jekiapp/hi-mod/internal/model"
 	"github.com/jekiapp/hi-mod/pkg/handler"
 )
@@ -37,7 +41,7 @@ func (uc renderPageUsecase) ObjectAddress() interface{} {
 func (uc renderPageUsecase) HandlerFunc(input interface{}) (output interface{}, err error) {
 	req := input.(*model.CheckoutPageRequest)
 
-	cartData, err := logic.GetCartData(req.UserID, uc)
+	cartData, err := cart_logic.GetCartData(req.UserID, uc)
 	if err != nil {
 		return nil, err
 	}
@@ -47,12 +51,12 @@ func (uc renderPageUsecase) HandlerFunc(input interface{}) (output interface{}, 
 		return nil, err
 	}
 
-	checkItem, err := logic.ConvertCartItemToCheckoutItem(cartData.Items, uc)
+	checkItem, err := cart_logic.ConvertCartItemToCheckoutItem(cartData.Items, uc)
 	if err != nil {
 		return nil, err
 	}
 
-	totalPrice, err := logic.CalculateTotalPrice(req.PromoCoupon, checkItem, uc)
+	totalPrice, err := price_logic.CalculateTotalPrice(req.PromoCoupon, checkItem, uc)
 	if err != nil {
 		return nil, err
 	}
@@ -66,17 +70,17 @@ func (uc renderPageUsecase) HandlerFunc(input interface{}) (output interface{}, 
 }
 
 func (uc renderPageUsecase) GetUserInfo(userID int64) (model.UserData, error) {
-	return domain.GetUserInfo(uc.cfg, uc.userCli, userID)
+	return user_domain.GetUserInfo(uc.cfg, uc.userCli, userID)
 }
 
 func (uc renderPageUsecase) GetCartFromDB(userID int64) (model.CartData, error) {
-	return domain.SelectCartByUserID(uc.dbCli, userID)
+	return cart_domain.SelectCartByUserID(uc.dbCli, userID)
 }
 
 func (uc renderPageUsecase) GetProductData(productID int64) (model.ProductData, error) {
-	return domain.GetProductByProductID(uc.cfg, uc.userCli, productID)
+	return product_domain.GetProductByProductID(uc.cfg, uc.userCli, productID)
 }
 
 func (uc renderPageUsecase) GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error) {
-	return domain.GetPromotionByCoupon(uc.cfg, uc.promotionCli, coupon, totalPrice)
+	return promo_domain.GetPromotionByCoupon(uc.cfg, uc.promotionCli, coupon, totalPrice)
 }

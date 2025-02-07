@@ -1,4 +1,4 @@
-package logic
+package price
 
 import "github.com/jekiapp/hi-mod/internal/model"
 
