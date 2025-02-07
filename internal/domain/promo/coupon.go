@@ -8,10 +8,18 @@ import (
 	"github.com/jekiapp/hi-mod/internal/model"
 )
 
-func GetPromotionByCoupon(cfg *config.Config, cli *http.Client, coupon string, totalPrice float64) (model.PromotionData, error) {
+func Init(cfg *config.Config) error {
+
+	promoURL = fmt.Sprintf("https://%s/%s", cfg.Promo.Host, cfg.Promo.GetPromoPath)
+
+	return nil
+}
+
+var promoURL string
+
+func GetPromotionByCoupon(cli *http.Client, coupon string, totalPrice float64) (model.PromotionData, error) {
 	// request to upstream to get promotion data
-	url := fmt.Sprintf("https://%s/%s", cfg.Promo.Host, cfg.Promo.GetPromoPath)
-	cli.Get(url)
+	cli.Get(promoURL)
 	// check error
 	// ...
 	// Unmarshal the response into the object

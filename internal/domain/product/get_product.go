@@ -8,10 +8,16 @@ import (
 	"github.com/jekiapp/hi-mod/internal/model"
 )
 
-func GetProductByProductID(cfg *config.Config, cli *http.Client, productID int64) (model.ProductData, error) {
+func Init(cfg *config.Config) error {
+	productURL = fmt.Sprintf("https://%s/%s", cfg.Product.Host, cfg.Product.GetProductPath)
+	return nil
+}
+
+var productURL string
+
+func GetProductByProductID(cli *http.Client, productID int64) (model.ProductData, error) {
 	// request to upstream to get product data
-	url := fmt.Sprintf("https://%s/%s", cfg.Product.Host, cfg.Product.GetProductPath)
-	cli.Get(url)
+	cli.Get(productURL)
 	// check error
 	// ...
 	// Unmarshal the response into the object

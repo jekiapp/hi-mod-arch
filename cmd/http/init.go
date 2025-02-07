@@ -1,15 +1,29 @@
 package main
 
 import (
-	"github.com/jekiapp/hi-mod/internal/config"
-	"github.com/jekiapp/hi-mod/internal/usecase/checkout"
-	"github.com/jekiapp/hi-mod/pkg/db"
 	"log"
 	"net/http"
+
+	"github.com/jekiapp/hi-mod/internal/config"
+	"github.com/jekiapp/hi-mod/internal/domain"
+	"github.com/jekiapp/hi-mod/internal/logic"
+	"github.com/jekiapp/hi-mod/internal/usecase/checkout"
+	"github.com/jekiapp/hi-mod/pkg/db"
 )
 
 func InitApplication() Handler {
 	cfg := config.InitConfig()
+
+	err := logic.Init(cfg)
+	if err != nil {
+		log.Fatalf("error init logic %s", err.Error())
+	}
+
+	err = domain.Init(cfg)
+	if err != nil {
+		log.Fatalf("error init domain %s", err.Error())
+	}
+
 	// init database
 	dbCli, err := db.InitDatabase(db.DbConfig{Host: cfg.Database.Host})
 	if err != nil {
