@@ -6,7 +6,7 @@ import (
 )
 
 type Handler struct {
-	CheckoutPageHandler handlerPkg.GenericHandler
+	CheckoutPageHandler handlerPkg.GenericHandlerHttp
 }
 
 func (h Handler) routes(mux *http.ServeMux) {

@@ -4,29 +4,26 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/jekiapp/hi-mod-arch/internal/config"
-	cart_domain "github.com/jekiapp/hi-mod-arch/internal/domain/cart"
 	product_domain "github.com/jekiapp/hi-mod-arch/internal/domain/product"
 	promo_domain "github.com/jekiapp/hi-mod-arch/internal/domain/promo"
+	tx_domain "github.com/jekiapp/hi-mod-arch/internal/domain/transaction"
 	user_domain "github.com/jekiapp/hi-mod-arch/internal/domain/user"
-	cart_logic "github.com/jekiapp/hi-mod-arch/internal/logic/cart"
 	price_logic "github.com/jekiapp/hi-mod-arch/internal/logic/price"
+	tx_logic "github.com/jekiapp/hi-mod-arch/internal/logic/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
 	"github.com/jekiapp/hi-mod-arch/pkg/handler"
 )
 
 type renderPageUsecase struct {
-	cfg          *config.Config
 	dbCli        *sql.DB
 	userCli      *http.Client
 	productCli   *http.Client
 	promotionCli *http.Client
 }
 
-func RenderCheckoutPage(cfg *config.Config, dbCli *sql.DB,
-	promotionCli, productCli, userCli *http.Client) handler.GenericHandler {
+func RenderCheckoutPage(dbCli *sql.DB,
+	promotionCli, productCli, userCli *http.Client) handler.GenericHandlerHttp {
 	return renderPageUsecase{
-		cfg:          cfg,
 		dbCli:        dbCli,
 		productCli:   productCli,
 		userCli:      userCli,
@@ -41,7 +38,7 @@ func (uc renderPageUsecase) ObjectAddress() interface{} {
 func (uc renderPageUsecase) HandlerFunc(input interface{}) (output interface{}, err error) {
 	req := input.(*model.CheckoutPageRequest)
 
-	cartData, err := cart_logic.GetCartData(req.UserID, uc)
+	cartData, err := tx_logic.GetCartData(req.UserID, uc)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +48,7 @@ func (uc renderPageUsecase) HandlerFunc(input interface{}) (output interface{}, 
 		return nil, err
 	}
 
-	checkItem, err := cart_logic.ConvertCartItemToCheckoutItem(cartData.Items, uc)
+	checkItem, err := tx_logic.ConvertCartItemToCheckoutItem(cartData.Items, uc)
 	if err != nil {
 		return nil, err
 	}
@@ -70,17 +67,17 @@ func (uc renderPageUsecase) HandlerFunc(input interface{}) (output interface{}, 
 }
 
 func (uc renderPageUsecase) GetUserInfo(userID int64) (model.UserData, error) {
-	return user_domain.GetUserInfo(uc.cfg, uc.userCli, userID)
+	return user_domain.GetUserInfo(uc.userCli, userID)
 }
 
 func (uc renderPageUsecase) GetCartFromDB(userID int64) (model.CartData, error) {
-	return cart_domain.SelectCartByUserID(uc.dbCli, userID)
+	return tx_domain.SelectCartByUserID(uc.dbCli, userID)
 }
 
 func (uc renderPageUsecase) GetProductData(productID int64) (model.ProductData, error) {
-	return product_domain.GetProductByProductID(uc.cfg, uc.userCli, productID)
+	return product_domain.GetProductByProductID(uc.userCli, productID)
 }
 
 func (uc renderPageUsecase) GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error) {
-	return promo_domain.GetPromotionByCoupon(uc.cfg, uc.promotionCli, coupon, totalPrice)
+	return promo_domain.GetPromotionByCoupon(uc.promotionCli, coupon, totalPrice)
 }

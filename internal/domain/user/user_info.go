@@ -15,7 +15,7 @@ func Init(cfg *config.Config) error {
 
 var userSvcURL string
 
-func GetUserInfo(cfg *config.Config, cli *http.Client, userID int64) (model.UserData, error) {
+func GetUserInfo(cli *http.Client, userID int64) (model.UserData, error) {
 	// request to upstream to get user data
 	cli.Get(userSvcURL)
 	// check error

@@ -1,4 +1,4 @@
-package cart
+package transaction
 
 import "github.com/jekiapp/hi-mod-arch/internal/model"
 
