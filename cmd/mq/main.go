@@ -2,56 +2,68 @@ package main
 
 import (
 	"fmt"
-	"log"
-
+	"github.com/jekiapp/hi-mod-arch/internal/config"
+	"github.com/jekiapp/hi-mod-arch/pkg/handler"
 	"github.com/nsqio/go-nsq"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-// Define your message handler structure
-type NsqHandler struct{}
-
-// Implement the HandleMessage method for your handler
-func (h *NsqHandler) HandleMessage(message *nsq.Message) error {
-	// Log the message (or perform whatever logic you need)
-	fmt.Printf("Received message: %s\n", string(message.Body))
-	// Return nil if you successfully processed the message
-	return nil
-}
-
-func initializeNsqConsumer(topic, channel, nsqAddr string) (*nsq.Consumer, error) {
-	// Create a new NSQ consumer
-	config := nsq.NewConfig()
-	consumer, err := nsq.NewConsumer(topic, channel, config)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create NSQ consumer: %w", err)
-	}
-
-	// Create an instance of your handler
-	handler := &NsqHandler{}
-
-	// Attach your handler to the consumer
-	consumer.AddHandler(handler)
-
-	// Connect the consumer to the NSQ daemon
-	err = consumer.ConnectToNSQD(nsqAddr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to NSQ daemon: %w", err)
-	}
-
-	// Return the consumer if everything is set up correctly
-	return consumer, nil
-}
-
 func main() {
-	// Initialize the consumer
-	consumer, err := initializeNsqConsumer(topic, channel, nsqAddr)
-	if err != nil {
-		log.Fatalf("Error initializing NSQ consumer: %v", err)
+	cfg := config.InitConfig()
+
+	application := initApplication(cfg)
+	consumers := application.registerConsumer()
+
+	stopChan := make(chan struct{})
+	stopChannels := make([]chan struct{}, 0)
+
+	for _, con := range consumers {
+		stopChan, err := startConsumer(cfg.NsqConfig.NsqdAddress, con, stopChan)
+
+		if err != nil {
+			log.Fatalf("error start consumer: %s", err.Error())
+			return
+		}
+		stopChannels = append(stopChannels, stopChan)
 	}
 
-	// Wait until the consumer finishes its work
-	select {
-	case <-consumer.StopChan:
-		fmt.Println("NSQ consumer stopped.")
+	fmt.Println("All consumers started!")
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+	<-sigChan // Wait for termination signal
+
+	close(stopChan) // Signal consumers to stop
+	for _, stopped := range stopChannels {
+		if stopped != nil {
+			<-stopped // Wait for each consumer to stop
+		}
 	}
+
+	fmt.Println("All consumers finished.")
+}
+
+func startConsumer(nsqdAddress string, consumer handler.Consumer, stopChan chan struct{}) (chan struct{}, error) {
+	nsqConsumer, err := nsq.NewConsumer(consumer.Topic, consumer.Channel, nsq.NewConfig())
+	if err != nil {
+		return nil, fmt.Errorf("consumer error:%s", err.Error())
+	}
+
+	nsqConsumer.AddHandler(consumer.Handler)
+	if err := nsqConsumer.ConnectToNSQD(nsqdAddress); err != nil {
+		return nil, fmt.Errorf("connection faield: %s", err.Error())
+	}
+
+	stopped := make(chan struct{})
+	go func() {
+		<-stopChan // Wait for stop signal
+		nsqConsumer.Stop()
+		<-nsqConsumer.StopChan // Wait for consumer to stop completely
+		close(stopped)
+	}()
+
+	return stopped, nil
 }

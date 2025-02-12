@@ -3,20 +3,29 @@ package post_payment
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/jekiapp/hi-mod-arch/internal/domain/promo"
 	tx_domain "github.com/jekiapp/hi-mod-arch/internal/domain/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/logic/price"
 	tx_logic "github.com/jekiapp/hi-mod-arch/internal/logic/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
 	"github.com/jekiapp/hi-mod-arch/pkg/handler"
-	"net/http"
-	"time"
 )
 
 type createOrderUsecase struct {
 	dbCli        *sql.DB
 	productCli   *http.Client
 	promotionCli *http.Client
+}
+
+func NewCreateOrderUsecase(dbcli *sql.DB, prodCli, promoCli *http.Client) *createOrderUsecase {
+	return &createOrderUsecase{
+		dbCli:        dbcli,
+		productCli:   prodCli,
+		promotionCli: promoCli,
+	}
 }
 
 func (uc *createOrderUsecase) HandlerFunc(input interface{}) (output handler.NsqHandlerResult, err error) {

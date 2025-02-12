@@ -1,5 +1,7 @@
 package config
 
+import "github.com/nsqio/go-nsq"
+
 func InitConfig() *Config {
 	// read config from file
 	return &Config{}
@@ -10,6 +12,13 @@ type Config struct {
 	Product  ProductConfig
 	Promo    PromoConfig
 	User     UserConfig
+
+	NsqConfig NsqConfig
+}
+
+type NsqConfig struct {
+	NsqdAddress    string
+	ConsumerConfig *nsq.Config
 }
 
 type DatabaseConfig struct {
