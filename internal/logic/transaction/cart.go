@@ -31,6 +31,7 @@ func ConvertCartItemToCheckoutItem(cartItems []model.CartItem, itf IConvertCartI
 		subtotal := product.ProductPrice * float64(item.Quantity)
 
 		checkItem := model.CheckoutItem{
+			Product:  product,
 			Quantity: item.Quantity,
 			Subtotal: subtotal,
 		}
