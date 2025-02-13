@@ -11,7 +11,7 @@ func TestHandlerFunc(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mock := NewMockrenderPageInterface(ctrl)
+	mock := NewMockIRenderPage(ctrl)
 	testCase := map[string]struct {
 		mock   func() *model.CheckoutPageRequest
 		Output interface{}
@@ -95,12 +95,11 @@ func TestHandlerFunc(t *testing.T) {
 		// more test coverage
 	}
 
-	uc := renderPageUsecase{mock}
 	for name, tc := range testCase {
 		t.Run(name, func(t *testing.T) {
 			req := tc.mock()
 
-			resp, err := uc.HandlerFunc(req)
+			resp, err := renderPage(mock, *req)
 			if err != nil {
 				assert.Error(t, tc.err)
 				return

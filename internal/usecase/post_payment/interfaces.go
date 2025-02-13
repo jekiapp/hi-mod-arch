@@ -6,7 +6,8 @@ import (
 	"github.com/jekiapp/hi-mod-arch/pkg/db"
 )
 
-type createOrderUsecaseItf interface {
+//go:generate mockgen -source=interfaces.go -destination=mock_test.go -package=post_payment
+type IcreateOrderUsecase interface {
 	db.ITransaction
 	GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error)
 	InsertOrder(tx *sql.Tx, order model.OrderData) (int64, error)

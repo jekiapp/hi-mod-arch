@@ -28,46 +28,54 @@ func NewCreateOrderUsecase(dbcli *sql.DB, prodCli, promoCli *http.Client) *creat
 	}
 }
 
+var ERR_PYM_MISMATCH = fmt.Errorf("payment amount mismatch")
+
 func (uc *createOrderUsecase) HandlerFunc(input interface{}) (output handler.NsqHandlerResult, err error) {
 	paymentData := input.(*model.PaymentSuccess)
+	err = createOrder(uc, *paymentData)
+	if err != nil {
+		if err == ERR_PYM_MISMATCH {
+			output.Finish = true
+		} else {
+			output.Requeue = time.Second
+		}
+	}
+	return output, err
+}
 
+func createOrder(uc IcreateOrderUsecase, paymentData model.PaymentSuccess) error {
 	totalPrice, err := price.CalculateTotalPrice(paymentData.CouponUsed, paymentData.Items, uc)
 	if err != nil {
-		output.Requeue = time.Second
-		return output, fmt.Errorf("error calculate price: %s", err.Error())
+		return fmt.Errorf("error calculate price: %s", err.Error())
 	}
 
 	// validate to avoid coupon fraud
 	if totalPrice != paymentData.PaymentAmount {
-		output.Finish = true
-		return output, fmt.Errorf("payment amount mismatch")
+		return ERR_PYM_MISMATCH
 	}
 
-	orderData := tx_logic.ConvertPaymentDataToOrder(*paymentData)
+	orderData := tx_logic.ConvertPaymentDataToOrder(paymentData)
 
 	tx, _ := uc.Begin()
 
 	orderID, err := uc.InsertOrder(tx, orderData)
 	if err != nil {
-		output.Requeue = time.Second
-		return output, fmt.Errorf("error insert order: %s", err.Error())
+		return fmt.Errorf("error insert order: %s", err.Error())
 	}
 
 	for _, item := range orderData.OrderItems {
 		err := uc.InsertOrderItem(tx, orderID, item)
 		if err != nil {
-			output.Requeue = time.Second
-			return output, fmt.Errorf("error insert order item: %s", err.Error())
+			return fmt.Errorf("error insert order item: %s", err.Error())
 		}
 	}
 
 	err = uc.Commit(tx)
 	if err != nil {
-		output.Requeue = time.Second
-		return output, fmt.Errorf("error commit tx : %s", err.Error())
+		return fmt.Errorf("error commit tx : %s", err.Error())
 	}
 
-	return output, nil
+	return nil
 }
 
 func (uc *createOrderUsecase) ObjectAddress() interface{} {

@@ -11,31 +11,31 @@ import (
 	model "github.com/jekiapp/hi-mod-arch/internal/model"
 )
 
-// MockrenderPageInterface is a mock of renderPageInterface interface.
-type MockrenderPageInterface struct {
+// MockIRenderPage is a mock of IRenderPage interface.
+type MockIRenderPage struct {
 	ctrl     *gomock.Controller
-	recorder *MockrenderPageInterfaceMockRecorder
+	recorder *MockIRenderPageMockRecorder
 }
 
-// MockrenderPageInterfaceMockRecorder is the mock recorder for MockrenderPageInterface.
-type MockrenderPageInterfaceMockRecorder struct {
-	mock *MockrenderPageInterface
+// MockIRenderPageMockRecorder is the mock recorder for MockIRenderPage.
+type MockIRenderPageMockRecorder struct {
+	mock *MockIRenderPage
 }
 
-// NewMockrenderPageInterface creates a new mock instance.
-func NewMockrenderPageInterface(ctrl *gomock.Controller) *MockrenderPageInterface {
-	mock := &MockrenderPageInterface{ctrl: ctrl}
-	mock.recorder = &MockrenderPageInterfaceMockRecorder{mock}
+// NewMockIRenderPage creates a new mock instance.
+func NewMockIRenderPage(ctrl *gomock.Controller) *MockIRenderPage {
+	mock := &MockIRenderPage{ctrl: ctrl}
+	mock.recorder = &MockIRenderPageMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockrenderPageInterface) EXPECT() *MockrenderPageInterfaceMockRecorder {
+func (m *MockIRenderPage) EXPECT() *MockIRenderPageMockRecorder {
 	return m.recorder
 }
 
 // GetCartFromDB mocks base method.
-func (m *MockrenderPageInterface) GetCartFromDB(userID int64) (model.CartData, error) {
+func (m *MockIRenderPage) GetCartFromDB(userID int64) (model.CartData, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCartFromDB", userID)
 	ret0, _ := ret[0].(model.CartData)
@@ -44,13 +44,13 @@ func (m *MockrenderPageInterface) GetCartFromDB(userID int64) (model.CartData, e
 }
 
 // GetCartFromDB indicates an expected call of GetCartFromDB.
-func (mr *MockrenderPageInterfaceMockRecorder) GetCartFromDB(userID interface{}) *gomock.Call {
+func (mr *MockIRenderPageMockRecorder) GetCartFromDB(userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCartFromDB", reflect.TypeOf((*MockrenderPageInterface)(nil).GetCartFromDB), userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCartFromDB", reflect.TypeOf((*MockIRenderPage)(nil).GetCartFromDB), userID)
 }
 
 // GetProductData mocks base method.
-func (m *MockrenderPageInterface) GetProductData(productID int64) (model.ProductData, error) {
+func (m *MockIRenderPage) GetProductData(productID int64) (model.ProductData, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProductData", productID)
 	ret0, _ := ret[0].(model.ProductData)
@@ -59,13 +59,13 @@ func (m *MockrenderPageInterface) GetProductData(productID int64) (model.Product
 }
 
 // GetProductData indicates an expected call of GetProductData.
-func (mr *MockrenderPageInterfaceMockRecorder) GetProductData(productID interface{}) *gomock.Call {
+func (mr *MockIRenderPageMockRecorder) GetProductData(productID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProductData", reflect.TypeOf((*MockrenderPageInterface)(nil).GetProductData), productID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProductData", reflect.TypeOf((*MockIRenderPage)(nil).GetProductData), productID)
 }
 
 // GetPromotion mocks base method.
-func (m *MockrenderPageInterface) GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error) {
+func (m *MockIRenderPage) GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPromotion", coupon, totalPrice)
 	ret0, _ := ret[0].(model.PromotionData)
@@ -74,13 +74,13 @@ func (m *MockrenderPageInterface) GetPromotion(coupon string, totalPrice float64
 }
 
 // GetPromotion indicates an expected call of GetPromotion.
-func (mr *MockrenderPageInterfaceMockRecorder) GetPromotion(coupon, totalPrice interface{}) *gomock.Call {
+func (mr *MockIRenderPageMockRecorder) GetPromotion(coupon, totalPrice interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPromotion", reflect.TypeOf((*MockrenderPageInterface)(nil).GetPromotion), coupon, totalPrice)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPromotion", reflect.TypeOf((*MockIRenderPage)(nil).GetPromotion), coupon, totalPrice)
 }
 
 // GetUserInfo mocks base method.
-func (m *MockrenderPageInterface) GetUserInfo(userID int64) (model.UserData, error) {
+func (m *MockIRenderPage) GetUserInfo(userID int64) (model.UserData, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserInfo", userID)
 	ret0, _ := ret[0].(model.UserData)
@@ -89,7 +89,7 @@ func (m *MockrenderPageInterface) GetUserInfo(userID int64) (model.UserData, err
 }
 
 // GetUserInfo indicates an expected call of GetUserInfo.
-func (mr *MockrenderPageInterfaceMockRecorder) GetUserInfo(userID interface{}) *gomock.Call {
+func (mr *MockIRenderPageMockRecorder) GetUserInfo(userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserInfo", reflect.TypeOf((*MockrenderPageInterface)(nil).GetUserInfo), userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserInfo", reflect.TypeOf((*MockIRenderPage)(nil).GetUserInfo), userID)
 }
