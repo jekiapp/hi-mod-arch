@@ -2,6 +2,7 @@ package transaction
 
 import "github.com/jekiapp/hi-mod-arch/internal/model"
 
+//go:generate mockgen -source=cart.go -destination=mock/cart.go
 type IGetCartData interface {
 	GetCartFromDB(userID int64) (model.CartData, error)
 }

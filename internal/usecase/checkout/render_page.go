@@ -14,6 +14,14 @@ import (
 	"github.com/jekiapp/hi-mod-arch/pkg/handler"
 )
 
+//go:generate mockgen -source=render_page.go -destination=mock/render_page.go
+type renderPageItf interface {
+	GetUserInfo(userID int64) (model.UserData, error)
+	GetCartFromDB(userID int64) (model.CartData, error)
+	GetProductData(productID int64) (model.ProductData, error)
+	GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error)
+}
+
 type renderPageUsecase struct {
 	dbCli        *sql.DB
 	userCli      *http.Client
@@ -40,7 +48,7 @@ func (uc renderPageUsecase) HandlerFunc(input interface{}) (output interface{}, 
 	return renderPage(uc, *in)
 }
 
-func renderPage(uc IRenderPage, input model.CheckoutPageRequest) (response model.CheckoutPageResponse, err error) {
+func renderPage(uc renderPageItf, input model.CheckoutPageRequest) (response model.CheckoutPageResponse, err error) {
 	cartData, err := tx_logic.GetCartData(input.UserID, uc)
 	if err != nil {
 		return response, err

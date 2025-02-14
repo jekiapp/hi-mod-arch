@@ -5,6 +5,7 @@ import (
 	"github.com/nsqio/go-nsq"
 )
 
+//go:generate mockgen -source=order.go -destination=mock_test.go -package=transaction
 type ICreateOrder interface {
 	InsertOrder(data model.OrderData) error
 	PublishCreateOrderEvent(msg nsq.Message) error

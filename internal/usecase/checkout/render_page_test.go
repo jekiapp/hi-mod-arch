@@ -3,6 +3,7 @@ package checkout
 import (
 	"github.com/golang/mock/gomock"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
+	mock_checkout "github.com/jekiapp/hi-mod-arch/internal/usecase/checkout/mock"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -11,7 +12,7 @@ func TestHandlerFunc(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mock := NewMockIRenderPage(ctrl)
+	mock := mock_checkout.NewMockrenderPageItf(ctrl)
 	testCase := map[string]struct {
 		mock   func() *model.CheckoutPageRequest
 		Output interface{}
