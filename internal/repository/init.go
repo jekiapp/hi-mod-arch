@@ -1,10 +1,10 @@
-package domain
+package repository
 
 import (
 	"github.com/jekiapp/hi-mod-arch/internal/config"
-	"github.com/jekiapp/hi-mod-arch/internal/domain/product"
-	"github.com/jekiapp/hi-mod-arch/internal/domain/promo"
-	"github.com/jekiapp/hi-mod-arch/internal/domain/user"
+	"github.com/jekiapp/hi-mod-arch/internal/repository/product"
+	"github.com/jekiapp/hi-mod-arch/internal/repository/promo"
+	"github.com/jekiapp/hi-mod-arch/internal/repository/user"
 )
 
 func Init(cfg *config.Config) error {
@@ -25,6 +25,6 @@ func Init(cfg *config.Config) error {
 		return err
 	}
 
-	// init other domain
+	// init other repository
 	return err
 }

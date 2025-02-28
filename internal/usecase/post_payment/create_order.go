@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jekiapp/hi-mod-arch/internal/domain/promo"
-	tx_domain "github.com/jekiapp/hi-mod-arch/internal/domain/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/logic/price"
 	tx_logic "github.com/jekiapp/hi-mod-arch/internal/logic/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
+	"github.com/jekiapp/hi-mod-arch/internal/repository/promo"
+	tx_domain "github.com/jekiapp/hi-mod-arch/internal/repository/transaction"
 	"github.com/jekiapp/hi-mod-arch/pkg/db"
 	"github.com/jekiapp/hi-mod-arch/pkg/handler"
 )

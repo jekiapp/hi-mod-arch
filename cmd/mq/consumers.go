@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/jekiapp/hi-mod-arch/internal/config"
-	"github.com/jekiapp/hi-mod-arch/internal/domain"
 	"github.com/jekiapp/hi-mod-arch/internal/logic"
+	"github.com/jekiapp/hi-mod-arch/internal/repository"
 	"github.com/jekiapp/hi-mod-arch/internal/usecase/post_payment"
 	"github.com/jekiapp/hi-mod-arch/pkg/db"
 	"github.com/jekiapp/hi-mod-arch/pkg/handler"
@@ -19,9 +19,9 @@ func initApplication(cfg *config.Config) Handler {
 		log.Fatalf("error init logic %s", err.Error())
 	}
 
-	err = domain.Init(cfg)
+	err = repository.Init(cfg)
 	if err != nil {
-		log.Fatalf("error init domain %s", err.Error())
+		log.Fatalf("error init repository %s", err.Error())
 	}
 
 	// init database

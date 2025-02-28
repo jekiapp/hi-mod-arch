@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"net/http"
 
-	product_domain "github.com/jekiapp/hi-mod-arch/internal/domain/product"
-	promo_domain "github.com/jekiapp/hi-mod-arch/internal/domain/promo"
-	tx_domain "github.com/jekiapp/hi-mod-arch/internal/domain/transaction"
-	user_domain "github.com/jekiapp/hi-mod-arch/internal/domain/user"
 	price_logic "github.com/jekiapp/hi-mod-arch/internal/logic/price"
 	tx_logic "github.com/jekiapp/hi-mod-arch/internal/logic/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
+	product_domain "github.com/jekiapp/hi-mod-arch/internal/repository/product"
+	promo_domain "github.com/jekiapp/hi-mod-arch/internal/repository/promo"
+	tx_domain "github.com/jekiapp/hi-mod-arch/internal/repository/transaction"
+	user_domain "github.com/jekiapp/hi-mod-arch/internal/repository/user"
 	"github.com/jekiapp/hi-mod-arch/pkg/handler"
 )
 
