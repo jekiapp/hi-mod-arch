@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/jekiapp/hi-mod-arch/internal/config"
+	"github.com/jekiapp/hi-mod-arch/config"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
 )
 

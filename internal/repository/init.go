@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/jekiapp/hi-mod-arch/internal/config"
+	"github.com/jekiapp/hi-mod-arch/config"
 	"github.com/jekiapp/hi-mod-arch/internal/repository/product"
 	"github.com/jekiapp/hi-mod-arch/internal/repository/promo"
 	"github.com/jekiapp/hi-mod-arch/internal/repository/user"

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jekiapp/hi-mod-arch/internal/config"
+	"github.com/jekiapp/hi-mod-arch/config"
 	"github.com/jekiapp/hi-mod-arch/internal/logic"
 	"github.com/jekiapp/hi-mod-arch/internal/repository"
 	"github.com/jekiapp/hi-mod-arch/internal/usecase/checkout"
