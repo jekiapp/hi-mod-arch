@@ -7,19 +7,18 @@ import (
 	price_logic "github.com/jekiapp/hi-mod-arch/internal/logic/price"
 	tx_logic "github.com/jekiapp/hi-mod-arch/internal/logic/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
-	product_domain "github.com/jekiapp/hi-mod-arch/internal/repository/product"
-	promo_domain "github.com/jekiapp/hi-mod-arch/internal/repository/promo"
-	tx_domain "github.com/jekiapp/hi-mod-arch/internal/repository/transaction"
-	user_domain "github.com/jekiapp/hi-mod-arch/internal/repository/user"
-	"github.com/jekiapp/hi-mod-arch/pkg/handler"
+	product_repo "github.com/jekiapp/hi-mod-arch/internal/repository/product"
+	promo_repo "github.com/jekiapp/hi-mod-arch/internal/repository/promo"
+	tx_repo "github.com/jekiapp/hi-mod-arch/internal/repository/transaction"
+	user_repo "github.com/jekiapp/hi-mod-arch/internal/repository/user"
 )
 
 //go:generate mockgen -source=render_page.go -destination=mock/render_page.go
 type renderPageItf interface {
+	tx_logic.IGetCartData
+	tx_logic.IConvertCartItemToCheckoutItem
+	price_logic.ICalculateTotalPrice
 	GetUserInfo(userID int64) (model.UserData, error)
-	GetCartFromDB(userID int64) (model.CartData, error)
-	GetProductData(productID int64) (model.ProductData, error)
-	GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error)
 }
 
 type renderPageUsecase struct {
@@ -29,8 +28,8 @@ type renderPageUsecase struct {
 	promotionCli *http.Client
 }
 
-func RenderCheckoutPage(dbCli *sql.DB,
-	promotionCli, productCli, userCli *http.Client) handler.GenericHandlerHttp {
+func NewRenderCheckoutPage(dbCli *sql.DB,
+	promotionCli, productCli, userCli *http.Client) renderPageUsecase {
 	return renderPageUsecase{
 		dbCli:        dbCli,
 		productCli:   productCli,
@@ -78,17 +77,17 @@ func renderPage(uc renderPageItf, input model.CheckoutPageRequest) (response mod
 }
 
 func (uc renderPageUsecase) GetUserInfo(userID int64) (model.UserData, error) {
-	return user_domain.GetUserInfo(uc.userCli, userID)
+	return user_repo.GetUserInfo(uc.userCli, userID)
 }
 
 func (uc renderPageUsecase) GetCartFromDB(userID int64) (model.CartData, error) {
-	return tx_domain.SelectCartByUserID(uc.dbCli, userID)
+	return tx_repo.SelectCartByUserID(uc.dbCli, userID)
 }
 
 func (uc renderPageUsecase) GetProductData(productID int64) (model.ProductData, error) {
-	return product_domain.GetProductByProductID(uc.userCli, productID)
+	return product_repo.GetProductByProductID(uc.userCli, productID)
 }
 
 func (uc renderPageUsecase) GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error) {
-	return promo_domain.GetPromotionByCoupon(uc.promotionCli, coupon, totalPrice)
+	return promo_repo.GetPromotionByCoupon(uc.promotionCli, coupon, totalPrice)
 }

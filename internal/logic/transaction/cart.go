@@ -8,11 +8,11 @@ type IGetCartData interface {
 }
 
 func GetCartData(userID int64, itf IGetCartData) (model.CartData, error) {
-	// validate user id
+	// ...validate user id (optional)
 	cartData, err := itf.GetCartFromDB(userID)
-	//validate cart
+	// ...validate cart
 	if err != nil {
-		// if err sql no rows
+		// ...handle error
 	}
 	return cartData, nil
 }

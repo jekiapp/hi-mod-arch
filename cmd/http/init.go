@@ -35,7 +35,7 @@ func InitApplication() Handler {
 	promoCli := &http.Client{}
 
 	newHandler := Handler{
-		CheckoutPageHandler: checkout.RenderCheckoutPage(dbCli, promoCli, productCli, userCli),
+		CheckoutPageHandler: checkout.NewRenderCheckoutPage(dbCli, promoCli, productCli, userCli),
 	}
 
 	return newHandler

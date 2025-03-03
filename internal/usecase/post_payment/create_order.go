@@ -10,7 +10,7 @@ import (
 	tx_logic "github.com/jekiapp/hi-mod-arch/internal/logic/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
 	"github.com/jekiapp/hi-mod-arch/internal/repository/promo"
-	tx_domain "github.com/jekiapp/hi-mod-arch/internal/repository/transaction"
+	tx_repo "github.com/jekiapp/hi-mod-arch/internal/repository/transaction"
 	"github.com/jekiapp/hi-mod-arch/pkg/db"
 	"github.com/jekiapp/hi-mod-arch/pkg/handler"
 )
@@ -108,9 +108,9 @@ func (uc *createOrderUsecase) Rollback(tx *sql.Tx) error {
 }
 
 func (uc *createOrderUsecase) InsertOrder(tx *sql.Tx, order model.OrderData) (int64, error) {
-	return tx_domain.InsertOrder(tx, order)
+	return tx_repo.InsertOrder(tx, order)
 }
 
 func (uc *createOrderUsecase) InsertOrderItem(tx *sql.Tx, orderID int64, order model.OrderItem) error {
-	return tx_domain.InsertOrderItem(tx, orderID, order)
+	return tx_repo.InsertOrderItem(tx, orderID, order)
 }
