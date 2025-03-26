@@ -2,6 +2,7 @@ package transaction
 
 import "github.com/jekiapp/hi-mod-arch/internal/model"
 
+//go:generate mockgen -source=cart.go -destination=mock/cart.go
 type IConvertCartItemToCheckoutItem interface {
 	GetProductData(productID int64) (model.ProductData, error)
 }
