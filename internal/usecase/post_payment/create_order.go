@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/jekiapp/hi-mod-arch/internal/logic/price"
-	tx_logic "github.com/jekiapp/hi-mod-arch/internal/logic/transaction"
 	"github.com/jekiapp/hi-mod-arch/internal/model"
 	"github.com/jekiapp/hi-mod-arch/internal/repository/promo"
 	tx_repo "github.com/jekiapp/hi-mod-arch/internal/repository/transaction"
@@ -63,7 +62,7 @@ func createOrder(uc IcreateOrderUsecase, paymentData model.PaymentSuccess) error
 		return ERR_PYM_MISMATCH
 	}
 
-	orderData := tx_logic.ConvertPaymentDataToOrder(paymentData)
+	orderData := convertPaymentDataToOrder(paymentData)
 
 	tx, _ := uc.Begin()
 
@@ -85,6 +84,27 @@ func createOrder(uc IcreateOrderUsecase, paymentData model.PaymentSuccess) error
 	}
 
 	return nil
+}
+
+// Example of object conversion function
+// Notice that this function is a static function. This way, this function should be easily refactored to logic package
+// when there are other usecase(s) that need this function
+func convertPaymentDataToOrder(pymData model.PaymentSuccess) model.OrderData {
+	orderItem := make([]model.OrderItem, 0)
+	for _, item := range pymData.Items {
+		oitem := model.OrderItem{
+			ProductID:  item.Product.ProductID,
+			Qty:        item.Quantity,
+			TotalPrice: item.Subtotal,
+		}
+		orderItem = append(orderItem, oitem)
+	}
+
+	return model.OrderData{
+		UserID:      pymData.UserID,
+		OrderAmount: pymData.PaymentAmount,
+		OrderItems:  orderItem,
+	}
 }
 
 func (uc *createOrderUsecase) ObjectAddress() interface{} {

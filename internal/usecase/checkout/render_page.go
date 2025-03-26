@@ -48,7 +48,7 @@ func (uc renderPageUsecase) HandlerFunc(input interface{}) (output interface{}, 
 }
 
 func renderPage(uc renderPageItf, input model.CheckoutPageRequest) (response model.CheckoutPageResponse, err error) {
-	cartData, err := tx_logic.GetCartData(input.UserID, uc)
+	cartData, err := uc.GetCartFromDB(input.UserID)
 	if err != nil {
 		return response, err
 	}
