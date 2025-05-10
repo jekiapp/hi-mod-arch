@@ -7,7 +7,7 @@ import (
 	"github.com/jekiapp/hi-mod-arch/config"
 	"github.com/jekiapp/hi-mod-arch/internal/logic"
 	"github.com/jekiapp/hi-mod-arch/internal/repository"
-	"github.com/jekiapp/hi-mod-arch/internal/usecase/checkout"
+	"github.com/jekiapp/hi-mod-arch/internal/usecase/example"
 	"github.com/jekiapp/hi-mod-arch/pkg/db"
 )
 
@@ -35,7 +35,7 @@ func InitApplication() Handler {
 	promoCli := &http.Client{}
 
 	newHandler := Handler{
-		CheckoutPageHandler: checkout.NewRenderCheckoutPage(dbCli, promoCli, productCli, userCli),
+		ExampleHandler: example.NewExampleUsecase(dbCli, promoCli, productCli, userCli),
 	}
 
 	return newHandler

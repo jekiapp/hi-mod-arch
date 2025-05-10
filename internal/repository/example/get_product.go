@@ -1,7 +1,6 @@
 package product
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/jekiapp/hi-mod-arch/config"
@@ -9,7 +8,6 @@ import (
 )
 
 func Init(cfg *config.Config) error {
-	productURL = fmt.Sprintf("https://%s/%s", cfg.Product.Host, cfg.Product.GetProductPath)
 	return nil
 }
 
