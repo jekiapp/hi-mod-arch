@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/nsqio/go-nsq"
 	"time"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/nsqio/go-nsq"
 )
 
 type NsqHandlerResult struct {
@@ -12,24 +15,28 @@ type NsqHandlerResult struct {
 	Finish  bool
 }
 
-type GenericHandlerNsq interface {
-	// the ideal signature would be having context as the first parameter
-	// I omitted it to maintain simplicity
-	HandlerFunc(input interface{}) (output NsqHandlerResult, err error)
-	ObjectAddress() interface{}
+type GenericHandlerNsq[I any] interface {
+	HandleMessage(ctx context.Context, input I) (output NsqHandlerResult, err error)
 }
 
-func NsqGenericHandler(handler GenericHandlerNsq) nsq.HandlerFunc {
+func NsqGenericHandler[I any](handler GenericHandlerNsq[I]) nsq.HandlerFunc {
+	validate := validator.New()
+
 	return func(msg *nsq.Message) error {
 		body := msg.Body
-		data := handler.ObjectAddress()
+		data := new(I)
 		if err := json.Unmarshal(body, data); err != nil {
 			return fmt.Errorf("error unmarshal object %+v", data)
 		}
 
-		// (optional) validate input object using json validator
+		ctx := context.Background()
 
-		output, err := handler.HandlerFunc(data)
+		// Validate input object using json validator
+		if err := validate.Struct(data); err != nil {
+			return fmt.Errorf("validation failed: %w", err)
+		}
+
+		output, err := handler.HandleMessage(ctx, *data)
 		if err != nil {
 			if output.Requeue != 0 {
 				msg.Requeue(output.Requeue)
@@ -43,7 +50,6 @@ func NsqGenericHandler(handler GenericHandlerNsq) nsq.HandlerFunc {
 		msg.Finish()
 		return nil
 	}
-
 }
 
 type Consumer struct {
@@ -53,7 +59,7 @@ type Consumer struct {
 	Handler nsq.Handler
 }
 
-func NewGenericConsumer(topic, channel string, config *nsq.Config, handler GenericHandlerNsq) Consumer {
+func NewGenericConsumer[T any](topic, channel string, config *nsq.Config, handler GenericHandlerNsq[T]) Consumer {
 	return Consumer{
 		Topic:   topic,
 		Channel: channel,
