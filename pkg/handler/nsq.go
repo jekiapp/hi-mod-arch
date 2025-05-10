@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/nsqio/go-nsq"
 )
 
@@ -20,8 +19,6 @@ type GenericHandlerNsq[I any] interface {
 }
 
 func NsqGenericHandler[I any](handler GenericHandlerNsq[I]) nsq.HandlerFunc {
-	validate := validator.New()
-
 	return func(msg *nsq.Message) error {
 		body := msg.Body
 		data := new(I)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jekiapp/hi-mod-arch/config"
 	"github.com/jekiapp/hi-mod-arch/internal/logic"
+	"github.com/jekiapp/hi-mod-arch/internal/model"
 	"github.com/jekiapp/hi-mod-arch/internal/repository"
 	"github.com/jekiapp/hi-mod-arch/internal/usecase/post_payment"
 	"github.com/jekiapp/hi-mod-arch/pkg/db"
@@ -43,7 +44,7 @@ func initApplication(cfg *config.Config) Handler {
 
 type Handler struct {
 	cfg                *config.Config
-	CreateOrderUsecase handler.GenericHandlerNsq
+	CreateOrderUsecase handler.GenericHandlerNsq[model.PaymentSuccess]
 }
 
 func (h *Handler) registerConsumer() []handler.Consumer {

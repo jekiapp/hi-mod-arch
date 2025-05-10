@@ -1,12 +1,14 @@
 package main
 
 import (
-	handlerPkg "github.com/jekiapp/hi-mod-arch/pkg/handler"
 	"net/http"
+
+	checkout "github.com/jekiapp/hi-mod-arch/internal/usecase/checkout"
+	handlerPkg "github.com/jekiapp/hi-mod-arch/pkg/handler"
 )
 
 type Handler struct {
-	CheckoutPageHandler handlerPkg.GenericHandlerHttp
+	CheckoutPageHandler handlerPkg.GenericHandlerHttp[checkout.CheckoutPageRequest, checkout.CheckoutPageResponse]
 }
 
 func (h Handler) routes(mux *http.ServeMux) {

@@ -9,6 +9,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+var validate = validator.New()
+
 type GenericHandlerHttp[I any, O any] interface {
 	HandlerFunc(ctx context.Context, input I) (output O, err error)
 }
@@ -28,8 +30,6 @@ type Response[O any] struct {
 }
 
 func HttpGenericHandler[I any, O any](handler GenericHandlerHttp[I, O]) func(w http.ResponseWriter, r *http.Request) {
-	validate := validator.New()
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Set content type header
 		w.Header().Set("Content-Type", "application/json")
