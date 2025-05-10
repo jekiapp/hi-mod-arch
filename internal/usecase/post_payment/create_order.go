@@ -1,6 +1,7 @@
 package post_payment
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -14,33 +15,24 @@ import (
 	"github.com/jekiapp/hi-mod-arch/pkg/handler"
 )
 
-//go:generate mockgen -source=create_order.go -destination=mock/create_order.go
-type IcreateOrderUsecase interface {
-	db.ITransaction
-	GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error)
-	InsertOrder(tx *sql.Tx, order model.OrderData) (int64, error)
-	InsertOrderItem(tx *sql.Tx, orderID int64, order model.OrderItem) error
-}
-
 type createOrderUsecase struct {
-	dbCli        *sql.DB
-	productCli   *http.Client
-	promotionCli *http.Client
+	repo iCreateOrderRepo
 }
 
 func NewCreateOrderUsecase(dbcli *sql.DB, prodCli, promoCli *http.Client) *createOrderUsecase {
 	return &createOrderUsecase{
-		dbCli:        dbcli,
-		productCli:   prodCli,
-		promotionCli: promoCli,
+		repo: &createOrderRepo{
+			dbCli:        dbcli,
+			productCli:   prodCli,
+			promotionCli: promoCli,
+		},
 	}
 }
 
 var ERR_PYM_MISMATCH = fmt.Errorf("payment amount mismatch")
 
-func (uc *createOrderUsecase) HandlerFunc(input interface{}) (output handler.NsqHandlerResult, err error) {
-	paymentData := input.(*model.PaymentSuccess)
-	err = createOrder(uc, *paymentData)
+func (uc *createOrderUsecase) HandleMessage(ctx context.Context, input model.PaymentSuccess) (output handler.NsqHandlerResult, err error) {
+	err = uc.createOrder(input)
 	if err != nil {
 		if err == ERR_PYM_MISMATCH {
 			output.Finish = true
@@ -51,8 +43,8 @@ func (uc *createOrderUsecase) HandlerFunc(input interface{}) (output handler.Nsq
 	return output, err
 }
 
-func createOrder(uc IcreateOrderUsecase, paymentData model.PaymentSuccess) error {
-	totalPrice, err := price.CalculateTotalPrice(paymentData.CouponUsed, paymentData.Items, uc)
+func (uc *createOrderUsecase) createOrder(paymentData model.PaymentSuccess) error {
+	totalPrice, err := price.CalculateTotalPrice(paymentData.CouponUsed, paymentData.Items, uc.repo)
 	if err != nil {
 		return fmt.Errorf("error calculate price: %s", err.Error())
 	}
@@ -64,21 +56,21 @@ func createOrder(uc IcreateOrderUsecase, paymentData model.PaymentSuccess) error
 
 	orderData := convertPaymentDataToOrder(paymentData)
 
-	tx, _ := uc.Begin()
+	tx, _ := uc.repo.Begin()
 
-	orderID, err := uc.InsertOrder(tx, orderData)
+	orderID, err := uc.repo.InsertOrder(tx, orderData)
 	if err != nil {
 		return fmt.Errorf("error insert order: %s", err.Error())
 	}
 
 	for _, item := range orderData.OrderItems {
-		err := uc.InsertOrderItem(tx, orderID, item)
+		err := uc.repo.InsertOrderItem(tx, orderID, item)
 		if err != nil {
 			return fmt.Errorf("error insert order item: %s", err.Error())
 		}
 	}
 
-	err = uc.Commit(tx)
+	err = uc.repo.Commit(tx)
 	if err != nil {
 		return fmt.Errorf("error commit tx : %s", err.Error())
 	}
@@ -107,30 +99,40 @@ func convertPaymentDataToOrder(pymData model.PaymentSuccess) model.OrderData {
 	}
 }
 
-func (uc *createOrderUsecase) ObjectAddress() interface{} {
-	return &model.PaymentSuccess{}
+//go:generate mockgen -source=create_order.go -destination=mock/create_order.go
+type iCreateOrderRepo interface {
+	db.ITransaction
+	GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error)
+	InsertOrder(tx *sql.Tx, order model.OrderData) (int64, error)
+	InsertOrderItem(tx *sql.Tx, orderID int64, order model.OrderItem) error
 }
 
-func (uc *createOrderUsecase) GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error) {
+type createOrderRepo struct {
+	dbCli        *sql.DB
+	productCli   *http.Client
+	promotionCli *http.Client
+}
+
+func (uc *createOrderRepo) GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error) {
 	return promo.GetPromotionByCoupon(uc.promotionCli, coupon, totalPrice)
 }
 
-func (uc *createOrderUsecase) Begin() (*sql.Tx, error) {
+func (uc *createOrderRepo) Begin() (*sql.Tx, error) {
 	return uc.dbCli.Begin()
 }
 
-func (uc *createOrderUsecase) Commit(tx *sql.Tx) error {
+func (uc *createOrderRepo) Commit(tx *sql.Tx) error {
 	return tx.Commit()
 }
 
-func (uc *createOrderUsecase) Rollback(tx *sql.Tx) error {
+func (uc *createOrderRepo) Rollback(tx *sql.Tx) error {
 	return tx.Rollback()
 }
 
-func (uc *createOrderUsecase) InsertOrder(tx *sql.Tx, order model.OrderData) (int64, error) {
+func (uc *createOrderRepo) InsertOrder(tx *sql.Tx, order model.OrderData) (int64, error) {
 	return tx_repo.InsertOrder(tx, order)
 }
 
-func (uc *createOrderUsecase) InsertOrderItem(tx *sql.Tx, orderID int64, order model.OrderItem) error {
+func (uc *createOrderRepo) InsertOrderItem(tx *sql.Tx, orderID int64, order model.OrderItem) error {
 	return tx_repo.InsertOrderItem(tx, orderID, order)
 }
