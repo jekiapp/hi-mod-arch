@@ -11,10 +11,6 @@ import (
 
 var validate = validator.New()
 
-type GenericHandlerHttp[I any, O any] interface {
-	HandlerFunc(ctx context.Context, input I) (output O, err error)
-}
-
 type ResponseStatus string
 
 const (
@@ -29,7 +25,9 @@ type Response[O any] struct {
 	Error   string         `json:"error,omitempty"`
 }
 
-func HttpGenericHandler[I any, O any](handler GenericHandlerHttp[I, O]) func(w http.ResponseWriter, r *http.Request) {
+type GenericPostHandler[I any, O any] func(ctx context.Context, input I) (output O, err error)
+
+func HandleGenericPost[I any, O any](handler GenericPostHandler[I, O]) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Set content type header
 		w.Header().Set("Content-Type", "application/json")
@@ -71,7 +69,7 @@ func HttpGenericHandler[I any, O any](handler GenericHandlerHttp[I, O]) func(w h
 		}
 
 		// Execute handler
-		result, err := handler.HandlerFunc(r.Context(), *data)
+		result, err := handler(r.Context(), *data)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(Response[O]{
