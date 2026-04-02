@@ -104,6 +104,18 @@ type iCreateOrderRepo interface {
     InsertOrder(tx *sql.Tx, order model.OrderData) (int64, error)
     InsertOrderItem(tx *sql.Tx, orderID int64, order model.OrderItem) error
 }
+
+func (uc *createOrderUsecase) HandleMessage(ctx context.Context, input model.PaymentSuccess) (output handler.NsqHandlerResult, err error) {
+    totalPrice, err := price.CalculateTotalPrice(input.CouponUsed, input.Items, uc.repo)
+    if err != nil {
+        return output, err
+    }
+    if totalPrice != input.PaymentAmount {
+        output.Finish = true
+        return output, ERR_PYM_MISMATCH
+    }
+    return output, nil
+}
 ```
 
 Source: `internal/usecase/post_payment/create_order.go`
@@ -124,15 +136,29 @@ Source: `internal/logic/price/total_price.go`
 
 ### 3) Repository Pattern
 
-Repository methods should stay thin and delegate to repository package functions.
+Repository should be function-based in `internal/repository/*` packages.
+Usecase may wrap these functions through its repo interface for testability.
 
 ```go
-func (uc renderPageRepo) GetCartFromDB(userID int64) (model.CartData, error) {
-    return tx_repo.SelectCartByUserID(uc.dbCli, userID)
+package transaction
+
+import (
+    "database/sql"
+    "github.com/jekiapp/hi-mod-arch/internal/model"
+)
+
+func SelectCartByUserID(db *sql.DB, userID int64) (model.CartData, error) {
+    data := model.CartData{}
+    rows, err := db.Query("SELECT * from cart WHERE user_id=$1", userID)
+    if err != nil {
+        return data, err
+    }
+    _ = rows
+    return data, nil
 }
 ```
 
-Source: `internal/usecase/checkout/render_page.go`
+Source: `internal/repository/transaction/cart.go`
 
 ### 4) Generic Transport Adapters
 

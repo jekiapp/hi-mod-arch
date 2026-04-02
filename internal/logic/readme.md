@@ -1,9 +1,29 @@
-this folder contains:<br>
+# Logic
 
-<b>data conversion</b>
-- convert input to readable data 
-- assigning value from one obj to another
+Logic is for reusable conversion/calculation functions.
 
-<b>logic formula</b>
-- reusable price formula
-- reusable data gathering and processing
+## Guidelines
+
+- Write static functions.
+- Pass inputs as arguments.
+- If logic needs external data, pass an interface.
+
+## Example
+
+```go
+type ICalculateTotalPrice interface {
+	GetPromotion(coupon string, totalPrice float64) (model.PromotionData, error)
+}
+
+func CalculateTotalPrice(coupon string, items []model.CheckoutItem, itf ICalculateTotalPrice) (float64, error) {
+	total := 0.0
+	for _, item := range items {
+		total += item.Subtotal
+	}
+	promo, err := itf.GetPromotion(coupon, total)
+	if err != nil {
+		return 0, err
+	}
+	return total - promo.Discount, nil
+}
+```

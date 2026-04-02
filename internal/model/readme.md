@@ -1,5 +1,24 @@
-this package contains reusable objects
-only contains structs with no methods
+# Model
 
-if method is necessary, only getter and setter which should only consist one line of code
-other than that, it has to be put in logic folder
+Model is shared data shape used by usecase, logic, and repository.
+
+## Guidelines
+
+- Mostly plain structs.
+- No business flow in model.
+- Put formula/conversion in `internal/logic`.
+
+## Example
+
+```go
+type CartItem struct {
+	ProductID int64
+	Quantity  int64
+}
+
+type CheckoutItem struct {
+	Product  ProductData
+	Quantity int64
+	Subtotal float64
+}
+```
